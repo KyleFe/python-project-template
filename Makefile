@@ -15,4 +15,7 @@ test:
 
 ci: lint format typecheck test
 
-.PHONY: install lint format typecheck test ci
+pre-commit:
+	poetry run pre-commit run --all-files
+
+.PHONY: install lint format typecheck test ci pre-commit
