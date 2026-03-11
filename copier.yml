@@ -68,3 +68,8 @@ _exclude:
   - "{% if not use_docker %}{{project_name}}/Dockerfile{% endif %}"
   - "{% if not use_docker %}{{project_name}}/.dockerignore{% endif %}"
   - "{% if not use_dotenv %}{{project_name}}/.env.example{% endif %}"
+
+_exclude:
+  - copier.yml
+  - README.md
+  - .git
