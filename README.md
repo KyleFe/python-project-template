@@ -87,7 +87,7 @@ the project name you provide in the next step.
 
 Run the following command from inside your projects folder:
 ```bash
-copier copy gh:KyleFerreira/python-project-template ./your-project-name
+copier copy gh:KyleFe/python-project-template ./your-project-name
 ```
 
 Replace `your-project-name` with the name of your new project (e.g.
@@ -192,7 +192,7 @@ git add .
 git commit -m "feat: initial project setup"
 
 # Create a new empty repo on GitHub (no README, no .gitignore), then:
-git remote add origin https://github.com/KyleFerreira/your-project-name.git
+git remote add origin https://github.com/KyleFe/your-project-name.git
 git push -u origin main
 ```
 
