@@ -38,6 +38,8 @@ Every project generated from this template includes:
 
 ## Requirements
 
+### Tools
+
 Before using this template, make sure you have the following installed:
 ```bash
 # Copier -- the tool that renders the template
@@ -50,12 +52,26 @@ brew install poetry
 git --version
 ```
 
-### One-time Git configuration (if not already done)
+### GitHub account
+
+You will need a GitHub account to push your projects to remote repositories
+and to use GitHub Actions for CI/CD. If you do not have one, create one at
+[github.com](https://github.com) before proceeding.
+
+### One-time Git configuration
+
+Run these once on your machine. They apply globally to all Git repositories
+you create going forward:
 ```bash
 git config --global user.name "Your Name"
 git config --global user.email "your@email.com"
 git config --global init.defaultBranch main
 ```
+
+The `init.defaultBranch main` setting ensures every new repository starts on
+`main` rather than `master`. This is important because the template's CI/CD
+pipeline is configured around `main`, `uat`, and `dev` branches. Once this is
+set globally you never need to rename branches after `git init`.
 
 ### Recommended Poetry configuration
 
@@ -115,7 +131,7 @@ Python version
 > 3.13
 
 Short project description
-> Analysis of exchange rate pass-through to core inflation
+> Analysis of exchange rate pass-through to local core inflation
 
 License (MIT / Apache-2.0 / Proprietary)
 > MIT
@@ -197,6 +213,58 @@ your-project-name/
 
 VS Code will detect `.venv/` automatically and use it as the Python
 interpreter for the project.
+
+### Step 5 -- Initialise Git
+
+Before installing pre-commit hooks, Git must be initialised in the project.
+```bash
+git init
+```
+
+Because you set `init.defaultBranch main` globally in the one-time Git
+configuration, the repository will already start on `main` -- no renaming
+needed. You can confirm with:
+```bash
+git branch
+```
+
+### Step 6 -- Install pre-commit hooks
+```bash
+poetry run pre-commit install
+```
+
+This activates the pre-commit hooks so that every time you run `git commit`,
+Ruff and Mypy run automatically and block the commit if there are any issues.
+You only need to run this once per project, immediately after `git init`.
+
+### Step 7 -- Confirm everything is working
+```bash
+make ci
+```
+
+If this passes with no errors, your project is fully set up and ready for
+development.
+
+### Step 8 -- Push to GitHub
+
+Create a new empty repository on GitHub first:
+
+1. Go to [github.com/new](https://github.com/new)
+2. Name it to match your project name (e.g. `inflation-db`)
+3. Leave it completely empty -- no README, no .gitignore, no license
+4. Click Create repository
+
+Then back in your terminal:
+```bash
+git add .
+git commit -m "feat: initial project setup"
+git remote add origin https://github.com/YOUR-USERNAME/your-project-name.git
+git push -u origin main
+```
+
+Replace `YOUR-USERNAME` with your GitHub username. After this your project
+is on GitHub with CI/CD active -- every push will trigger the Actions
+pipeline automatically.
 
 ---
 
@@ -288,37 +356,6 @@ poetry remove requests
 To see all installed packages:
 ```bash
 poetry show
-```
-
----
-
-### Step 5 -- Install pre-commit hooks
-```bash
-poetry run pre-commit install
-```
-
-This activates the pre-commit hooks so that every time you run `git commit`,
-Ruff and Mypy run automatically and block the commit if there are any issues.
-You only need to run this once per project, after cloning or generating it.
-
-### Step 6 -- Confirm everything is working
-```bash
-make ci
-```
-
-If this passes with no errors, your project is fully set up and ready for
-development.
-
-### Step 7 -- Initialise Git and push to GitHub
-```bash
-git init
-git branch -m master main
-git add .
-git commit -m "feat: initial project setup"
-
-# Create a new empty repo on GitHub (no README, no .gitignore), then:
-git remote add origin https://github.com/KyleFe/your-project-name.git
-git push -u origin main
 ```
 
 ---
