@@ -1,0 +1,17 @@
+site_name: {{ project_name }}
+site_description: {{ project_description }}
+
+theme:
+  name: material
+  palette:
+    scheme: default
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+
+nav:
+  - Home: index.md

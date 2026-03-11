@@ -1,0 +1,59 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Testing & coverage
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# Type checking
+.mypy_cache/
+
+# Linting
+.ruff_cache/
+
+# Environment files
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
+
+{% if use_notebooks %}
+# Jupyter
+.ipynb_checkpoints/
+{% endif %}
+
+{% if use_duckdb %}
+# DuckDB
+*.duckdb
+*.db
+{% endif %}
+
+{% if use_docs %}
+# Docs build
+site/
+{% endif %}
+
+{% if use_docker %}
+# Docker
+*.log
+{% endif %}

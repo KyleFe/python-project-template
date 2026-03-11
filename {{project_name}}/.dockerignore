@@ -1,0 +1,14 @@
+.venv/
+.git/
+.github/
+tests/
+docs/
+notebooks/
+*.duckdb
+*.db
+.env
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/

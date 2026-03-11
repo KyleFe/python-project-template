@@ -1,0 +1,59 @@
+[tool.poetry]
+name = "{{ project_name }}"
+version = "0.1.0"
+description = "{{ project_description }}"
+authors = ["{{ author_name }} <{{ author_email }}>"]
+readme = "README.md"
+packages = [{include = "{{ package_name }}", from = "src"}]
+
+[tool.poetry.dependencies]
+python = "^{{ python_version }}"
+{% if use_duckdb %}
+duckdb = ">=0.10.0"
+{% endif %}
+{% if use_dotenv %}
+python-dotenv = ">=1.0.0"
+{% endif %}
+
+[tool.poetry.group.dev.dependencies]
+pytest = ">=7.0"
+pytest-cov = ">=4.0"
+ruff = ">=0.4"
+mypy = ">=1.0"
+pre-commit = ">=3.0"
+{% if use_notebooks %}
+jupyter = ">=1.0"
+nbstripout = ">=0.7"
+{% endif %}
+
+{% if use_docs %}
+[tool.poetry.group.docs.dependencies]
+mkdocs-material = ">=9.0"
+mkdocstrings = {extras = ["python"], version = ">=0.24"}
+{% endif %}
+
+[tool.ruff]
+line-length = 88
+target-version = "py{{ python_version | replace('.', '') }}"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.mypy]
+strict = true
+python_version = "{{ python_version }}"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--cov=src --cov-report=term-missing --cov-fail-under=80"
+
+[tool.coverage.run]
+source = ["src"]
+omit = ["tests/*"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

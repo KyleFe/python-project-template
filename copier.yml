@@ -1,0 +1,70 @@
+project_name:
+    type: str
+    help: "Project name (e.g. inflation-db)"
+
+package_name:
+    type: str
+    help: "Python package name (e.g. inflation_db)"
+    default: "{{ project_name | lower | replace('-', '_') | replace(' ', '_') }}"
+
+author_name:
+    type: str
+    help: "Author name"
+    default: "Kyle Ferreira"
+
+author_email:
+    type: str
+    help: "Author email"
+    default: "kyle.fe0212@gmail.com"
+
+python_version:
+    type: str
+    help: "Python version"
+    default: "3.11"
+
+project_description:
+    type: str
+    help: "Short project description"
+
+license:
+    type: str
+    help: "License"
+    choices:
+        - MIT
+        - Apache-2.0
+        - Proprietary
+    default: MIT
+
+use_notebooks:
+    type: bool
+    help: "Include Jupyter notebooks support?"
+    default: false
+
+use_duckdb:
+    type: bool
+    help: "Include DuckDB support?"
+    default: false
+
+use_docs:
+    type: bool
+    help: "Include MkDocs documentation?"
+    default: false
+
+use_docker:
+    type: bool
+    help: "Include Docker support?"
+    default: false
+
+use_dotenv:
+    type: bool
+    help: "Include dotenv support?"
+    default: false
+
+_exclude:
+  - "{% if not use_notebooks %}{{project_name}}/notebooks{% endif %}"
+  - "{% if not use_duckdb %}{{project_name}}/data{% endif %}"
+  - "{% if not use_docs %}{{project_name}}/mkdocs.yml{% endif %}"
+  - "{% if not use_docs %}{{project_name}}/docs{% endif %}"
+  - "{% if not use_docker %}{{project_name}}/Dockerfile{% endif %}"
+  - "{% if not use_docker %}{{project_name}}/.dockerignore{% endif %}"
+  - "{% if not use_dotenv %}{{project_name}}/.env.example{% endif %}"
