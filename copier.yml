@@ -73,3 +73,5 @@ _exclude:
   - copier.yml
   - README.md
   - .git
+
+_templates_suffix: ""
