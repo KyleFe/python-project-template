@@ -19,7 +19,7 @@ Every project generated from this template includes:
 | Linting | Ruff | Catches bugs, bad patterns, unused imports |
 | Type checking | Mypy | Catches type errors before runtime |
 | Testing | pytest + pytest-cov | Runs tests with coverage reporting |
-| Git hooks | pre-commit | Runs checks automatically on every commit |
+| Git hooks | pre-commit | Runs Ruff automatically on every commit |
 | CI/CD | GitHub Actions | Runs lint, type check, and tests on push/PR |
 | Branch strategy | three-tier | main / uat / dev enforced in CI |
 | GitHub templates | PR + Issue | Standardised PR and issue descriptions |
@@ -116,10 +116,10 @@ Copier asks a series of questions to configure your project. Each question
 has a default value -- press Enter to accept it, or type your own answer.
 ```
 Project name (e.g. inflation-db)
-> inflation-analysis
+> inflation-db
 
 Python package name
-> inflation_analysis
+> inflation_db
 
 Author name
 > Kyle Ferreira
@@ -128,10 +128,10 @@ Author email
 > kyle.fe0212@gmail.com
 
 Python version
-> 3.13
+> 3.11
 
 Short project description
-> Analysis of exchange rate pass-through to local core inflation
+> A macroeconomic inflation database
 
 License (MIT / Apache-2.0 / Proprietary)
 > MIT
@@ -162,7 +162,7 @@ Two of the prompts can be confusing at first:
 the folder name, `pyproject.toml`, `README.md`, and documentation. It
 typically uses hyphens as separators.
 ```
-Example: inflation-analysis
+Example: inflation-db
 ```
 
 **Python package name** is the importable name of your package in Python
@@ -170,11 +170,11 @@ code -- the name you use in `import` statements. Python package names cannot
 contain hyphens, so they use underscores instead. Copier auto-suggests this
 by converting your project name, so you usually just press Enter to accept it.
 ```
-Example: inflation_analysis
+Example: inflation_db
 
 # This is what gets used in code:
-from inflation_analysis import something
-import inflation_analysis
+from inflation_db import something
+import inflation_db
 ```
 
 As a rule: project name uses hyphens (how humans refer to it), package name
@@ -234,7 +234,7 @@ poetry run pre-commit install
 ```
 
 This activates the pre-commit hooks so that every time you run `git commit`,
-Ruff and Mypy run automatically and block the commit if there are any issues.
+Ruff runs automatically and blocks the commit if there are any lint issues.
 You only need to run this once per project, immediately after `git init`.
 
 ### Step 7 -- Confirm everything is working
@@ -405,24 +405,27 @@ the first time, or after pulling changes that added new dependencies to
 `pyproject.toml`. It installs everything into `.venv/` and updates
 `poetry.lock`.
 ```bash
-make lint
-```
-Runs `ruff check .`. Scans all Python files for code quality issues --
-unused imports, bad patterns, style violations. Does not modify any files,
-only reports problems. Use this to see what needs fixing before committing.
-```bash
 make format
 ```
 Runs `ruff format .`. Automatically rewrites your Python files to conform
 to the project's style rules -- indentation, line length, quote style, etc.
-Run this before committing to ensure consistent formatting.
+Always run `make format` before `git add` and `git commit`. This ensures
+your code is formatted before the pre-commit hooks run, avoiding the common
+situation where a hook auto-fixes a file mid-commit and blocks it.
+```bash
+make lint
+```
+Runs `ruff check .`. Scans all Python files for code quality issues --
+unused imports, bad patterns, style violations. Does not modify any files,
+only reports problems. Run this after `make format` to catch any remaining
+issues before committing.
 ```bash
 make typecheck
 ```
 Runs `mypy src`. Statically analyses your code for type errors without
 executing it. Catches bugs like passing the wrong type to a function before
-they cause a runtime failure. Run this after writing new code or updating
-function signatures.
+they cause a runtime failure. Mypy runs in CI on every push -- run it
+locally when you want early feedback on type correctness.
 ```bash
 make test
 ```
@@ -436,6 +439,12 @@ make ci
 Runs lint, format check, typecheck, and test in sequence. This mirrors
 exactly what GitHub Actions runs on every push. If `make ci` passes locally,
 your push will pass CI. Run this before pushing to catch issues early.
+```bash
+make pre-commit
+```
+Runs all pre-commit hooks manually across every file in the project. Useful
+for checking what the hooks will do before making a commit, or for applying
+hook fixes to files you have not staged yet.
 
 ---
 
@@ -453,31 +462,56 @@ make install
 ```bash
 # After writing a new function or module
 make typecheck       # catch type errors immediately
-
-# Before committing
-make format          # auto-fix formatting
-make lint            # check for any remaining issues
 make test            # confirm nothing is broken
 ```
+
+**Before every commit -- always follow this order**
+```bash
+make format          # auto-fix formatting first
+make lint            # check for any remaining issues
+git add .
+git commit -m "feat: describe what you did"
+```
+
+Running `make format` before `git add` is important. The pre-commit hooks
+run Ruff automatically on commit -- if Ruff finds formatting issues it
+auto-fixes them and blocks the commit, requiring you to `git add` and
+commit again. Running `make format` first eliminates this by ensuring your
+code is already formatted before the hooks fire.
 
 **Before pushing or opening a PR**
 ```bash
 # Run the full suite to confirm everything passes
 make ci
+git push
 ```
 
 **Typical commit rhythm**
 ```bash
-make format          # fix formatting automatically
-make ci              # confirm everything passes
+make format          # fix formatting first
+make lint            # confirm clean
 git add .
 git commit -m "feat: describe what you did"
+make ci              # full check before pushing
 git push
 ```
 
-The pre-commit hooks will also run Ruff and Mypy automatically on
-`git commit`, so `make format` and `make lint` act as a first pass before
-the hooks fire.
+---
+
+## Pre-commit hooks vs CI
+
+This template separates concerns deliberately:
+
+**Pre-commit hooks (run locally on every commit):**
+- Ruff lint and format -- fast, catches style issues immediately
+- Standard file checks -- trailing whitespace, end of file, yaml validity
+
+**CI only (runs on GitHub on every push/PR):**
+- Mypy type checking -- thorough but slow, better as a gate than a blocker
+- Full test suite with coverage
+
+This means local commits are fast and rarely blocked, while GitHub Actions
+acts as the strict quality gate before code reaches `main` or `uat`.
 
 ---
 
